@@ -29,13 +29,16 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 # Conexión a la base de datos MariaDB
+import os
+
 db = pymysql.connect(
-    host=os.getenv("DB_HOST"),
-    port=int(os.getenv("DB_PORT", 3306)),
-    user=os.getenv("DB_USER"),
-    password=os.getenv("DB_PASSWORD"),
-    database=os.getenv("DB_NAME")
+    host=os.getenv("MYSQLHOST"),
+    user=os.getenv("MYSQLUSER"),
+    password=os.getenv("MYSQLPASSWORD"),
+    database=os.getenv("MYSQLDATABASE"),
+    port=int(os.getenv("MYSQLPORT"))
 )
+
 
 
 # Ruta para servir el favicon
