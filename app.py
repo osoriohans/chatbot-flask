@@ -29,7 +29,12 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 # Conexión a la base de datos MariaDB
-import os
+print("MYSQLHOST:", os.getenv("MYSQLHOST"))
+print("MYSQLUSER:", os.getenv("MYSQLUSER"))
+print("MYSQLPASSWORD:", os.getenv("MYSQLPASSWORD"))
+print("MYSQLDATABASE:", os.getenv("MYSQLDATABASE"))
+print("MYSQLPORT:", os.getenv("MYSQLPORT"))
+
 
 db = pymysql.connect(
     host=os.getenv("MYSQLHOST"),
@@ -209,3 +214,4 @@ def desactivar_cache(response):
 # Ejecutar servidor con SSL
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
+
