@@ -1,0 +1,6 @@
+flask 
+flask-cors 
+flask-talisman 
+openai 
+pymysql 
+gunicorn 
