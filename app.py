@@ -112,7 +112,7 @@ def consulta_gpt():
         # 🔍 Agrega esta línea para ver la IP y el número de consultas
         print(f"📡 IP detectada: {ip} - Consultas registradas en la última hora: {count}")
         
-        if count >= 3:
+        if count >= 20:
             cursor.close()
             return jsonify({"error": "Has alcanzado el límite de 3 consultas por hora."}), 429
 
@@ -207,6 +207,9 @@ def consulta_tiempo():
         primera_consulta = cursor.fetchone()[0]
         cursor.close()
 
+        # 👇 Aquí agregas el print para debug
+        print(f"⏱️ IP solicitante: {ip} - Primera consulta reciente registrada: {primera_consulta}")
+
         if primera_consulta:
             now = datetime.now()
             restante = (primera_consulta + timedelta(hours=1)) - now
@@ -214,9 +217,14 @@ def consulta_tiempo():
         else:
             segundos_restantes = 3600  # 60 minutos si no ha consultado
 
-        return jsonify({"segundos_restantes": segundos_restantes})
+        return jsonify({
+                "segundos_restantes": segundos_restantes,
+                "primera_consulta": str(primera_consulta) if primera_consulta else None
+})
+
     except Exception as e:
         return jsonify({"error": f"Error al calcular tiempo restante: {str(e)}"}), 500
+
 
 # Desactiva cache
 @app.after_request
