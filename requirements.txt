@@ -1,6 +1,7 @@
 flask 
-flask-cors 
-flask-talisman 
-openai 
-pymysql 
-gunicorn 
+flask
+pymysql
+openai
+cryptography
+flask-talisman
+flask-cors
