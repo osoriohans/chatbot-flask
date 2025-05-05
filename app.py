@@ -95,28 +95,29 @@ def consulta_gpt():
         tema = data.get('tema', 'General')
         subtema = data.get('subtema', 'No especificado')
         tipo_cliente = data.get('tipo_cliente', 'No indicado')
-        ip = request.remote_addr
+        ip = request.headers.get("X-Forwarded-For", request.remote_addr).split(',')[0].strip()
         user_agent = request.headers.get("User-Agent")
 
         if not pregunta or pregunta.strip() == "":
             return jsonify({"error": "Falta la pregunta"}), 400
 
-        # Limitar a 3 consultas por IP por hora
-        cursor = db.cursor()
-        cursor.execute("""
-            SELECT COUNT(*) FROM consultas_gpt
-            WHERE ip = %s AND fecha >= NOW() - INTERVAL 1 HOUR
-        """, (ip,))
-        count = cursor.fetchone()[0]
-        
-        # 🔍 Agrega esta línea para ver la IP y el número de consultas
-        print(f"📡 IP detectada: {ip} - Consultas registradas en la última hora: {count}")
-        
-        if count >= 20:
+        # 🔁 Límite de consultas por IP, excepto tu IP
+        if ip != "179.6.3.217":
+            cursor = db.cursor()
+            cursor.execute("""
+                SELECT COUNT(*) FROM consultas_gpt
+                WHERE ip = %s AND fecha >= NOW() - INTERVAL 1 HOUR
+            """, (ip,))
+            count = cursor.fetchone()[0]
+            print(f"📡 IP: {ip} - Consultas últimas 1h: {count}")
             cursor.close()
-            return jsonify({"error": "Has alcanzado el límite de 3 consultas por hora."}), 429
 
-        # Preparar prompt
+            if count >= 3:
+                return jsonify({"error": "Has alcanzado el límite de 3 consultas por hora."}), 429
+        else:
+            print("🔓 IP sin límite detectada:", ip)
+
+        # 🧠 Prompt
         prompt = f"""
 Eres un asesor especializado en temas {tema}, especialmente en {subtema}.
 El usuario se identifica como {tipo_cliente}.
@@ -136,7 +137,8 @@ Responde como un asesor senior. Si el tema depende de normativa oficial reciente
 
         respuesta = response.choices[0].message.content.strip()
 
-        # Guardar en base de datos
+        # 💾 Guardar en DB
+        cursor = db.cursor()
         sql = """
             INSERT INTO consultas_gpt (
                 fecha, ip, user_agent, tema, subtema, mensaje
@@ -145,14 +147,15 @@ Responde como un asesor senior. Si el tema depende de normativa oficial reciente
         """
         cursor.execute(sql, (ip, user_agent, tema, subtema, pregunta))
         db.commit()
-        # 🔍 Log adicional para confirmar registro
-        print(f"📝 Consulta registrada → IP: {ip}, Pregunta: {pregunta[:60]}...")
         cursor.close()
+
+        print(f"📝 Consulta registrada desde {ip}")
 
         return jsonify({"respuesta": respuesta})
 
     except Exception as e:
         return jsonify({"error": f"Error al consultar GPT: {str(e)}"}), 500
+
 
 # Ruta para registrar datos del contacto
 @app.route('/chat', methods=['POST'])
