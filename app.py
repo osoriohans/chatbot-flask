@@ -39,11 +39,19 @@ print("🔧 MYSQLPORT:", os.getenv("MYSQLPORT") or "❌ No encontrado")
 db = pymysql.connect(
     host=os.getenv("MYSQLHOST"),
     user=os.getenv("MYSQLUSER"),
-    password=os.getenv("MYSQL_ROOT_PASSWORD"),  # ✅ clave correcta
+    password=os.getenv("MYSQL_ROOT_PASSWORD"),
     database=os.getenv("MYSQLDATABASE"),
     port=int(os.getenv("MYSQLPORT"))
 )
 
+try:
+    test_cursor = db.cursor()
+    test_cursor.execute("SELECT NOW()")
+    resultado = test_cursor.fetchone()
+    print(f"✅ Conexión a la base de datos OK → {resultado[0]}")
+    test_cursor.close()
+except Exception as err:
+    print("❌ Error al conectar a la base de datos:", err)
 
 
 

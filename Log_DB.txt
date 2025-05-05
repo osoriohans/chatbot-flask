@@ -1,0 +1,6 @@
+Campo	Valor que debes colocar
+Host	ballast.proxy.rlwy.net (o el host que te dio Railway)
+Puerto	32679 (verifica si es ese el tuyo)
+Base de datos	railway (o el nombre que aparece en Railway)
+Usuario	root (o el que aparezca en tu Railway)
+Contraseña	La que te dio Railway (ej. OEtpJjUvvIikl...)
