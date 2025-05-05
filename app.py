@@ -207,7 +207,6 @@ def consulta_tiempo():
         primera_consulta = cursor.fetchone()[0]
         cursor.close()
 
-        # 👇 Aquí agregas el print para debug
         print(f"⏱️ IP solicitante: {ip} - Primera consulta reciente registrada: {primera_consulta}")
 
         if primera_consulta:
@@ -215,15 +214,16 @@ def consulta_tiempo():
             restante = (primera_consulta + timedelta(hours=1)) - now
             segundos_restantes = max(int(restante.total_seconds()), 0)
         else:
-            segundos_restantes = 3600  # 60 minutos si no ha consultado
+            segundos_restantes = 0  # ✅ Permitir uso inmediato si no hay registro
 
         return jsonify({
-                "segundos_restantes": segundos_restantes,
-                "primera_consulta": str(primera_consulta) if primera_consulta else None
-})
+            "segundos_restantes": segundos_restantes,
+            "primera_consulta": str(primera_consulta) if primera_consulta else None
+        })
 
     except Exception as e:
         return jsonify({"error": f"Error al calcular tiempo restante: {str(e)}"}), 500
+
 
 
 # Desactiva cache
