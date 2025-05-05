@@ -29,20 +29,21 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 # Conexión a la base de datos MariaDB
-print("MYSQLHOST:", os.getenv("MYSQLHOST"))
-print("MYSQLUSER:", os.getenv("MYSQLUSER"))
-print("MYSQLPASSWORD:", os.getenv("MYSQLPASSWORD"))
-print("MYSQLDATABASE:", os.getenv("MYSQLDATABASE"))
-print("MYSQLPORT:", os.getenv("MYSQLPORT"))
+print("🔧 MYSQLHOST:", os.getenv("MYSQLHOST") or "❌ No encontrado")
+print("🔧 MYSQLUSER:", os.getenv("MYSQLUSER") or "❌ No encontrado")
+print("🔧 MYSQLPASSWORD:", os.getenv("MYSQL_ROOT_PASSWORD") or "❌ No encontrado")
+print("🔧 MYSQLDATABASE:", os.getenv("MYSQLDATABASE") or "❌ No encontrado")
+print("🔧 MYSQLPORT:", os.getenv("MYSQLPORT") or "❌ No encontrado")
 
 
 db = pymysql.connect(
     host=os.getenv("MYSQLHOST"),
     user=os.getenv("MYSQLUSER"),
-    password=os.getenv("MYSQLPASSWORD"),
+    password=os.getenv("MYSQL_ROOT_PASSWORD"),  # ✅ clave correcta
     database=os.getenv("MYSQLDATABASE"),
     port=int(os.getenv("MYSQLPORT"))
 )
+
 
 
 
