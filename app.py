@@ -108,6 +108,10 @@ def consulta_gpt():
             WHERE ip = %s AND fecha >= NOW() - INTERVAL 1 HOUR
         """, (ip,))
         count = cursor.fetchone()[0]
+        
+        # 🔍 Agrega esta línea para ver la IP y el número de consultas
+        print(f"📡 IP detectada: {ip} - Consultas registradas en la última hora: {count}")
+        
         if count >= 3:
             cursor.close()
             return jsonify({"error": "Has alcanzado el límite de 3 consultas por hora."}), 429
@@ -141,6 +145,8 @@ Responde como un asesor senior. Si el tema depende de normativa oficial reciente
         """
         cursor.execute(sql, (ip, user_agent, tema, subtema, pregunta))
         db.commit()
+        # 🔍 Log adicional para confirmar registro
+        print(f"📝 Consulta registrada → IP: {ip}, Pregunta: {pregunta[:60]}...")
         cursor.close()
 
         return jsonify({"respuesta": respuesta})
